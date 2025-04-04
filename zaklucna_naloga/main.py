@@ -1,32 +1,19 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from tinydb import TinyDB, Query
 import os
-import json
 
 app = Flask(__name__)
 app.secret_key = "skrivni_kljuc_123"
 
-db = TinyDB('klepet.json')
-users = db.table('uporabniki')  
-components = db.table('komponente')  
-User = Query()  
+db = TinyDB('mealmatch.json')
+users = db.table('users')
+recipes = db.table('recipes')
+User = Query()
 
-DB_FILE = "klepet.json"
-
-def preberi_uporabnike():
-    if os.path.exists(DB_FILE):
-        with open(DB_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {"users": []}
-
-def shrani_uporabnike(data):
-    with open(DB_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def home():
     if 'username' in session:
-        return redirect(url_for('build_your_pc'))
+        return redirect(url_for('search_recipes'))
     return render_template('domov.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -35,24 +22,19 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        data = users.all()
-        user = next((u for u in data if u.get("username") == username), None)
-
-        if user:
-            if user.get("password") == password:
-                session['username'] = username
-                return jsonify({'success': True})
-            else:
-                return jsonify({'success': False, 'error': 'Napačno geslo!'})
+        user = users.get(User.username == username)
+        if user and user.get("password") == password:
+            session['username'] = username
+            return redirect(url_for('search_recipes'))
         else:
-            return jsonify({'success': False, 'error': 'Uporabnik ne obstaja!'})
-
+            return jsonify({'success': False, 'error': 'Napačno uporabniško ime ali geslo!'})
+    
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -75,21 +57,45 @@ def register():
             })
             
             session['username'] = username
-            return redirect(url_for('home'))
+            return redirect(url_for('search_recipes'))
         
         except Exception as e:
             return jsonify({'success': False, 'error': 'Prišlo je do napake pri registraciji'})
     
     return render_template('register.html')
 
-
-@app.route('/build')
-def build_your_pc():
+@app.route('/search', methods=['GET', 'POST'])
+def search_recipes():
     if 'username' not in session:
         return redirect(url_for('home'))
-    return render_template('build.html')
+    
+    found_recipes = []
+    if request.method == 'POST':
+        ingredients = request.form['ingredients'].lower().split(', ')  
+        for recipe in recipes.all():
+            if all(ingredient in [ing.lower() for ing in recipe['ingredients']] for ingredient in ingredients):
+                found_recipes.append(recipe)
+    
+    return render_template('search.html', recipes=found_recipes)
+
+@app.route('/add_recipe', methods=['GET', 'POST'])
+def add_recipe():
+    if 'username' not in session:
+        return redirect(url_for('home'))
+    
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        ingredients = request.form['ingredients'].split(', ')  
+
+        recipes.insert({
+            'name': name,
+            'description': description,
+            'ingredients': [ingredient.lower() for ingredient in ingredients]  
+        })
+        return redirect(url_for('search_recipes'))
+
+    return render_template('add_recipe.html')
 
 if __name__ == "__main__":
-    if not os.path.exists('templates'):
-        os.makedirs('templates')
     app.run(debug=True)

@@ -3,79 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prijava v Klepet</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Prijava</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Dobrodošli v Preprostem Klepetu</h1>
-    
-    <div id="login-container">
+    <div class="form-container">
         <h2>Prijava</h2>
-        
-        <form id="login-form">
-            <div>
-                <label for="username">Uporabniško ime:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            
-            <div>
-                <label for="password">Geslo:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            
-            <div>
-                <button type="submit">Prijava</button>
-            </div>
+        <form action="/login" method="POST">
+            <label for="username">Uporabniško ime:</label>
+            <input type="text" name="username" id="username" required>
+
+            <label for="password">Geslo:</label>
+            <input type="password" name="password" id="password" required>
+
+            <button type="submit">Prijavi se</button>
+
+            {% if error_message %}
+                <div class="error-message">
+                    {{ error_message }}
+                </div>
+            {% endif %}
         </form>
-        
-        <div id="error-message"></div>
-    </div>   
 
-    <script>
-        $('#login-form').submit(function(event) {
-            event.preventDefault(); 
-
-            const username = $('#username').val().trim();
-            const password = $('#password').val().trim();
-            const errorMessage = $('#error-message');
-
-            if (username === '' || password === '') {
-                errorMessage.text('Uporabniško ime in geslo sta obvezna!');
-                errorMessage.show();
-                return;
-            }
-
-            errorMessage.hide();
-
-            $.ajax({
-                url: '/login',
-                type: 'POST',
-                data: {
-                    username: username,
-                    password: password
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        window.location.href = '/';
-                    } else {
-                        errorMessage.text(response.error);
-                        errorMessage.show();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Podrobnosti napake:', xhr.responseText);
-                    errorMessage.text('Prišlo je do napake. Poskusite znova.');
-                    errorMessage.show();
-                }
-            });
-        });
-
-        $('#username, #password').keypress(function(e) {
-            if (e.key === 'Enter') {
-                $('#login-form').submit(); 
-            }
-        });
-    </script>
+        <p>Še nimaš računa? <a href="{{ url_for('register') }}">Registriraj se tukaj</a></p>
+    </div>
 </body>
 </html>

@@ -3,97 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registracija</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>MealMatch - Registracija</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Registracija</h1>
-    
-    <div id="register-container">
-        <h2>Ustvari nov račun</h2>
-        
-        <form id="register-form" method="POST" action="{{ url_for('register') }}">
-            <div>
-                <label for="username">Uporabniško ime:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Domov</a></li>
+                <li><a href="{{ url_for('login') }}">Prijava</a></li>
+                <li><a href="{{ url_for('register') }}">Registracija</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Registracija</h1>
+        <form method="POST">
+            <label for="username">Uporabniško ime:</label>
+            <input type="text" id="username" name="username" required>
             
-            <div>
-                <label for="password">Geslo:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
+            <label for="password">Geslo:</label>
+            <input type="password" id="password" name="password" required>
             
-            <div>
-                <label for="first_name">Ime:</label>
-                <input type="text" id="first_name" name="first_name" required>
-            </div>
+            <label for="first_name">Ime:</label>
+            <input type="text" id="first_name" name="first_name" required>
             
-            <div>
-                <label for="last_name">Priimek:</label>
-                <input type="text" id="last_name" name="last_name" required>
-            </div>
+            <label for="last_name">Priimek:</label>
+            <input type="text" id="last_name" name="last_name" required>
             
-            <div>
-                <button type="submit">Registriraj se</button>
-            </div>
+            <button type="submit">Registriraj se</button>
         </form>
-        
-        <div id="error-message" style="display: none;"></div>
-        <div id="back-to-login" style="display: none;">
-            <p>Uporabnik že obstaja. <a href="{{ url_for('login') }}">Pojdi nazaj na prijavo</a></p>
-        </div>
-    </div>   
+    </main>
 
-    <script>
-        $('#register-form').submit(function(event) {
-            event.preventDefault();
-
-            const username = $('#username').val().trim();
-            const password = $('#password').val().trim();
-            const first_name = $('#first_name').val().trim();
-            const last_name = $('#last_name').val().trim();
-            const errorMessage = $('#error-message');
-            const backToLogin = $('#back-to-login');
-
-            if (username === '' || password === '' || first_name === '' || last_name === '') {
-                errorMessage.text('Vsa polja so obvezna!');
-                errorMessage.show();
-                return;
-            }
-
-            errorMessage.hide();
-            backToLogin.hide();
-
-            $.ajax({
-                url: '/register',
-                type: 'POST',
-                data: {
-                    username: username,
-                    password: password,
-                    first_name: first_name,
-                    last_name: last_name
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        window.location.href = '/';
-                    } else {
-                        if (response.error === 'Uporabnik že obstaja!') {
-                            errorMessage.hide();
-                            backToLogin.show(); 
-                        } else {
-                            errorMessage.text(response.error);
-                            errorMessage.show();
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Podrobnosti napake:', xhr.responseText);
-                    errorMessage.text('Prišlo je do napake. Poskusite znova.');
-                    errorMessage.show();
-                }
-            });
-        });
-    </script>
+    <footer>
+        <p>&copy; 2025 MealMatch. Vse pravice pridržane.</p>
+    </footer>
 </body>
 </html>

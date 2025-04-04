@@ -2,11 +2,15 @@
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
-    <title>BuildYourPC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domov</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>BuildYourPC</h1>
-    <p><a href="/login">Prijava</a> | <a href="/register">Registracija</a></p>
+    <div class="form-container">
+        <h2>Dobrodošli na MealMatch!</h2>
+        <p>Če želite začeti, se prijavite ali registrirajte:</p>
+        <p><a href="{{ url_for('login') }}">Prijava</a> | <a href="{{ url_for('register') }}">Registracija</a></p>
+    </div>
 </body>
 </html>
-

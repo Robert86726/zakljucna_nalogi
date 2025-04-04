@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iskanje Receptov</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Iskanje Receptov</h2>
+        <form action="/search" method="POST">
+            <label for="ingredients">Sestavine:</label>
+            <input type="text" name="ingredients" id="ingredients" placeholder="Vnesite sestavine (ločeno z vejico)" required>
+            <button type="submit">Išči</button>
+        </form>
+
+        {% if recipes %}
+            <h3>Najdeni recepti:</h3>
+            <ul>
+                {% for recipe in recipes %}
+                    <li><strong>{{ recipe['name'] }}</strong>: {{ recipe['description'] }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Ni receptov za te sestavine.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
