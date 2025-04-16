@@ -11,20 +11,24 @@
         <h2>Iskanje Receptov</h2>
         <form action="/search" method="POST">
             <label for="ingredients">Sestavine:</label>
-            <input type="text" name="ingredients" id="ingredients" placeholder="Vnesite sestavine (ločeno z vejico)" required>
+            <input type="text" name="ingredients" id="ingredients" placeholder="npr. sir, jajca, kruh" required>
             <button type="submit">Išči</button>
         </form>
 
         {% if recipes %}
-            <h3>Najdeni recepti:</h3>
-            <ul>
-                {% for recipe in recipes %}
-                    <li><strong>{{ recipe['name'] }}</strong>: {{ recipe['description'] }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>Ni receptov za te sestavine.</p>
-        {% endif %}
+    <h3>Najdeni recepti:</h3>
+    <ul>
+        {% for recipe in recipes %}
+            <li>
+                <strong>{{ recipe['title'] }}</strong><br>
+                <img src="{{ recipe['image'] }}" alt="{{ recipe['title'] }}" width="200"><br>
+                <p><a href="https://spoonacular.com/recipes/{{ recipe['title']|replace(' ', '-') }}-{{ recipe['id'] }}" target="_blank">Poglej recept</a></p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Ni receptov za te sestavine.</p>
+{% endif %}
     </div>
 </body>
 </html>

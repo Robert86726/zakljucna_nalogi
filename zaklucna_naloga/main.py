@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from tinydb import TinyDB, Query
+import requests
 import os
 
 app = Flask(__name__)
@@ -9,6 +10,8 @@ db = TinyDB('mealmatch.json')
 users = db.table('users')
 recipes = db.table('recipes')
 User = Query()
+
+API_KEY = "fa1b1172374a42b1b8ba88992716df46"
 
 @app.route('/')
 def home():
@@ -68,13 +71,24 @@ def register():
 def search_recipes():
     if 'username' not in session:
         return redirect(url_for('home'))
-    
+
     found_recipes = []
     if request.method == 'POST':
-        ingredients = request.form['ingredients'].lower().split(', ')  
-        for recipe in recipes.all():
-            if all(ingredient in [ing.lower() for ing in recipe['ingredients']] for ingredient in ingredients):
-                found_recipes.append(recipe)
+        ingredients = request.form['ingredients']
+
+        url = 'https://api.spoonacular.com/recipes/findByIngredients'
+        params = {
+            'ingredients': ingredients,
+            'number': 10,
+            'apiKey': API_KEY
+        }
+
+        response = requests.get(url, params=params)
+
+        if response.status_code == 200:
+            found_recipes = response.json()
+        else:
+            found_recipes = []
     
     return render_template('search.html', recipes=found_recipes)
 
