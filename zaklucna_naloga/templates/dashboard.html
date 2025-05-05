@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyPal - Nadzorna plošča</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .day {
+            padding: 10px;
+            background-color: #f0f0f0;
+            text-align: center;
+            cursor: pointer;
+        }
+        .day:hover {
+            background-color: #d0e7ff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='StudyPal_logo.png') }}" alt="StudyPal Logo" class="logo">
+        <nav>
+            <a href="{{ url_for('logout') }}">Odjava</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Dobrodošel v StudyPal!</h1>
+
+        <section>
+            <h2>Dodaj predmet</h2>
+            <form action="/dodaj_predmet" method="POST">
+                <input type="text" name="predmet" placeholder="Ime predmeta" required>
+                <button type="submit">Dodaj</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Izberi predmet za dan v koledarju</h2>
+            <form id="izbira-form">
+                <label for="izbira_predmeta">Predmeti:</label>
+                <select id="izbira_predmeta" name="izbira_predmeta" required>
+                    <option value="">-- Izberi predmet --</option>
+                    {% for predmet in predmeti %}
+                        <option value="{{ predmet }}">{{ predmet }}</option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" id="izbran_dan" name="izbran_dan">
+            </form>
+        </section>
+
+        <section>
+            <h2>Koledar</h2>
+            <div class="calendar" id="calendar"></div>
+            <p id="info_izbira"></p>
+        </section>
+    </main>
+
+
+</body>
+</html>

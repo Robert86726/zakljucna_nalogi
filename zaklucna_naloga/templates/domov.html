@@ -1,16 +1,40 @@
 <!DOCTYPE html>
-<html lang="sl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Domov</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>StudyPal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .button-container {
+            margin-top: 40px;
+        }
+        a.button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 18px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        a.button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Dobrodošli na MealMatch!</h2>
-        <p>Če želite začeti, se prijavite ali registrirajte:</p>
-        <p><a href="{{ url_for('login') }}">Prijava</a> | <a href="{{ url_for('register') }}">Registracija</a></p>
+    <img src="{{ url_for('static', filename='logi.png') }}" alt="StudyPal Logo" style="max-width: 300px;">
+
+    <div class="button-container">
+        <a href="/register" class="button">Registracija</a>
+        <a href="/login" class="button">Prijava</a>
+        <a href="/home" class="button">Domov</a>
     </div>
 </body>
 </html>
