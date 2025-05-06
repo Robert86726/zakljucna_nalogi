@@ -5,26 +5,40 @@
     <title>StudyPal - Nadzorna plošča</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
+        .calendar-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 10px;
-            margin-top: 20px;
         }
-        .day {
+
+        .calendar-day {
+            border: 1px solid #ccc;
             padding: 10px;
-            background-color: #f0f0f0;
             text-align: center;
             cursor: pointer;
         }
-        .day:hover {
-            background-color: #d0e7ff;
+
+        .calendar-day:hover {
+            background-color: #f0f0f0;
+        }
+
+        .calendar-header {
+            font-weight: bold;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <header>
-        <img src="{{ url_for('static', filename='StudyPal_logo.png') }}" alt="StudyPal Logo" class="logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="StudyPal Logo" class="logo">
         <nav>
             <a href="{{ url_for('logout') }}">Odjava</a>
         </nav>
@@ -42,26 +56,68 @@
         </section>
 
         <section>
-            <h2>Izberi predmet za dan v koledarju</h2>
-            <form id="izbira-form">
-                <label for="izbira_predmeta">Predmeti:</label>
-                <select id="izbira_predmeta" name="izbira_predmeta" required>
-                    <option value="">-- Izberi predmet --</option>
-                    {% for predmet in predmeti %}
-                        <option value="{{ predmet }}">{{ predmet }}</option>
-                    {% endfor %}
-                </select>
-                <input type="hidden" id="izbran_dan" name="izbran_dan">
-            </form>
+            <h2>Izberi predmet</h2>
+            <label for="izbira_predmeta">Predmeti:</label>
+            <select id="izbira_predmeta" name="izbira_predmeta">
+                {% for predmet in predmeti %}
+                    <option value="{{ predmet }}">{{ predmet }}</option>
+                {% endfor %}
+            </select>
         </section>
 
         <section>
             <h2>Koledar</h2>
-            <div class="calendar" id="calendar"></div>
-            <p id="info_izbira"></p>
+            <div class="calendar-controls">
+                <button onclick="changeMonth(-1)">←</button>
+                <h3 id="month-year"></h3>
+                <button onclick="changeMonth(1)">→</button>
+            </div>
+            <div class="calendar-header">Pon | Tor | Sre | Čet | Pet | Sob | Ned</div>
+            <div id="calendar" class="calendar"></div>
         </section>
     </main>
 
+    <script>
+        let currentDate = new Date();
 
+        function renderCalendar() {
+            const calendarDiv = document.getElementById('calendar');
+            const monthYearTitle = document.getElementById('month-year');
+            calendarDiv.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay(); 
+
+            const startIndex = (firstDay + 6) % 7; 
+
+            monthYearTitle.textContent = currentDate.toLocaleString('sl-SI', { month: 'long', year: 'numeric' });
+
+            for (let i = 0; i < startIndex; i++) {
+                const emptyDiv = document.createElement('div');
+                calendarDiv.appendChild(emptyDiv);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                dayDiv.textContent = day;
+
+                dayDiv.addEventListener('click', () => {
+                    const subject = document.getElementById('izbira_predmeta').value;
+                });
+
+                calendarDiv.appendChild(dayDiv);
+            }
+        }
+
+        function changeMonth(offset) {
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            renderCalendar();
+        }
+
+        renderCalendar();
+    </script>
 </body>
 </html>

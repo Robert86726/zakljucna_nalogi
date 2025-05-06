@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from tinydb import TinyDB, Query
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
+app.secret_key = "1234"
 
 db = TinyDB('zapiski.json')
 users = db.table('users')
@@ -12,7 +12,7 @@ User = Query()
 
 @app.route('/')
 def home():
-    return render_template("domov.html")  # Vedno prikaži domov z logotipom
+    return render_template("domov.html")  
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
