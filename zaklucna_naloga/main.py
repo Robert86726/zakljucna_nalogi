@@ -77,6 +77,32 @@ def dodaj_predmet():
     predmet = request.form['predmet']
     subjects.insert({'username': session['username'], 'subject': predmet})
     return redirect(url_for('dashboard'))
+@app.route('/dodaj_zapisek', methods=['POST'])
+def dodaj_zapisek():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    datum = request.form['datum']
+    predmet = request.form['predmet']
+    zapis = request.form['zapisek']
+
+    notes.insert({
+        'username': session['username'],
+        'datum': datum,
+        'predmet': predmet,
+        'zapis': zapis
+    })
+
+    return redirect(url_for('dashboard'))
+
+@app.route('/zapiski/<datum>')
+def pridobi_zapiske(datum):
+    if 'username' not in session:
+        return jsonify([])
+
+    zapiski = notes.search((User.username == session['username']) & (User.datum == datum))
+    return jsonify(zapiski)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

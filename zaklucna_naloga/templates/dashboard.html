@@ -5,119 +5,139 @@
     <title>StudyPal - Nadzorna plošča</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
-        .calendar-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 10px;
-        }
-
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 5px;
+            margin-bottom: 20px;
         }
-
-        .calendar-day {
+        .day {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: center;
             cursor: pointer;
         }
-
-        .calendar-day:hover {
-            background-color: #f0f0f0;
-        }
-
-        .calendar-header {
-            font-weight: bold;
-            text-align: center;
+        .day:hover {
+            background-color: #eef;
         }
     </style>
 </head>
 <body>
-    <header>
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="StudyPal Logo" class="logo">
-        <nav>
-            <a href="{{ url_for('logout') }}">Odjava</a>
-        </nav>
-    </header>
+<header>
+    <img src="{{ url_for('static', filename='StudyPal_logo.png') }}" alt="StudyPal Logo" class="logo">
+    <nav>
+        <a href="{{ url_for('logout') }}">Odjava</a>
+    </nav>
+</header>
 
-    <main>
-        <h1>Dobrodošel v StudyPal!</h1>
+<main>
+    <h1>Dobrodošel v StudyPal!</h1>
 
-        <section>
-            <h2>Dodaj predmet</h2>
-            <form action="/dodaj_predmet" method="POST">
-                <input type="text" name="predmet" placeholder="Ime predmeta" required>
-                <button type="submit">Dodaj</button>
-            </form>
-        </section>
+    <section>
+        <h2>Dodaj predmet</h2>
+        <form action="/dodaj_predmet" method="POST">
+            <input type="text" name="predmet" placeholder="Ime predmeta" required>
+            <button type="submit">Dodaj</button>
+        </form>
+    </section>
 
-        <section>
-            <h2>Izberi predmet</h2>
-            <label for="izbira_predmeta">Predmeti:</label>
-            <select id="izbira_predmeta" name="izbira_predmeta">
+    <section>
+        <h2>Koledar</h2>
+        <div id="mesec" style="margin-bottom: 10px;">
+            <button onclick="premakniMesec(-1)">Prejšnji</button>
+            <span id="mesec-leto"></span>
+            <button onclick="premakniMesec(1)">Naslednji</button>
+        </div>
+        <div class="calendar" id="koledar"></div>
+    </section>
+
+    <section id="izbira-predmeta" style="display:none;">
+        <h3>Izberi predmet za <span id="izbran-datum"></span></h3>
+        <form action="/dodaj_zapisek" method="POST">
+            <input type="hidden" name="datum" id="input-datum">
+            <select name="predmet" required>
                 {% for predmet in predmeti %}
                     <option value="{{ predmet }}">{{ predmet }}</option>
                 {% endfor %}
             </select>
-        </section>
+            <textarea name="zapisek" placeholder="Vnesi zapisek..." required></textarea>
+            <button type="submit">Shrani zapisek</button>
+        </form>
+    </section>
+</main>
 
-        <section>
-            <h2>Koledar</h2>
-            <div class="calendar-controls">
-                <button onclick="changeMonth(-1)">←</button>
-                <h3 id="month-year"></h3>
-                <button onclick="changeMonth(1)">→</button>
-            </div>
-            <div class="calendar-header">Pon | Tor | Sre | Čet | Pet | Sob | Ned</div>
-            <div id="calendar" class="calendar"></div>
-        </section>
-    </main>
+<script>
+    const meseci = ["Januar", "Februar", "Marec", "April", "Maj", "Junij", "Julij", "Avgust", "September", "Oktober", "November", "December"];
+    let danes = new Date();
+    let prikazaniMesec = danes.getMonth();
+    let prikazanoLeto = danes.getFullYear();
+    let trenutnoIzbranaCelica = null;
 
-    <script>
-        let currentDate = new Date();
+    function prikaziKoledar(mesec, leto) {
+        const koledar = document.getElementById("koledar");
+        const naslov = document.getElementById("mesec-leto");
+        naslov.innerText = `${meseci[mesec]} ${leto}`;
+        koledar.innerHTML = "";
 
-        function renderCalendar() {
-            const calendarDiv = document.getElementById('calendar');
-            const monthYearTitle = document.getElementById('month-year');
-            calendarDiv.innerHTML = '';
+        let prviDan = new Date(leto, mesec, 1).getDay();
+        if (prviDan === 0) prviDan = 7;
 
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDay = new Date(year, month, 1).getDay(); 
+        const dniVMesecu = new Date(leto, mesec + 1, 0).getDate();
 
-            const startIndex = (firstDay + 6) % 7; 
-
-            monthYearTitle.textContent = currentDate.toLocaleString('sl-SI', { month: 'long', year: 'numeric' });
-
-            for (let i = 0; i < startIndex; i++) {
-                const emptyDiv = document.createElement('div');
-                calendarDiv.appendChild(emptyDiv);
-            }
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayDiv = document.createElement('div');
-                dayDiv.className = 'calendar-day';
-                dayDiv.textContent = day;
-
-                dayDiv.addEventListener('click', () => {
-                    const subject = document.getElementById('izbira_predmeta').value;
-                });
-
-                calendarDiv.appendChild(dayDiv);
-            }
+        for (let i = 1; i < prviDan; i++) {
+            const prazno = document.createElement("div");
+            koledar.appendChild(prazno);
         }
 
-        function changeMonth(offset) {
-            currentDate.setMonth(currentDate.getMonth() + offset);
-            renderCalendar();
-        }
+        for (let dan = 1; dan <= dniVMesecu; dan++) {
+            const celica = document.createElement("div");
+            celica.className = "day";
+            celica.innerText = dan;
 
-        renderCalendar();
-    </script>
+            const datumString = `${leto}-${String(mesec + 1).padStart(2, '0')}-${String(dan).padStart(2, '0')}`;
+            celica.dataset.datum = datumString;
+
+            celica.addEventListener("click", function () {
+                if (trenutnoIzbranaCelica) {
+                    trenutnoIzbranaCelica.classList.remove("selected-day");
+                }
+                celica.classList.add("selected-day");
+                trenutnoIzbranaCelica = celica;
+
+                document.getElementById("izbran-datum").innerText = datumString;
+                document.getElementById("input-datum").value = datumString;
+                document.getElementById("izbira-predmeta").style.display = "block";
+                document.getElementById("izbira-predmeta").scrollIntoView({ behavior: "smooth" });
+            });
+
+            koledar.appendChild(celica);
+        }
+    }
+
+    function premakniMesec(premik) {
+        prikazaniMesec += premik;
+        if (prikazaniMesec > 11) {
+            prikazaniMesec = 0;
+            prikazanoLeto++;
+        } else if (prikazaniMesec < 0) {
+            prikazaniMesec = 11;
+            prikazanoLeto--;
+        }
+        trenutnoIzbranaCelica = null;
+        document.getElementById("izbira-predmeta").style.display = "none";
+        prikaziKoledar(prikazaniMesec, prikazanoLeto);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        prikaziKoledar(prikazaniMesec, prikazanoLeto);
+    });
+</script>
+<style>
+    .selected-day {
+        background-color: #add8e6;
+        border: 2px solid #007BFF;
+    }
+</style>
+
 </body>
 </html>
