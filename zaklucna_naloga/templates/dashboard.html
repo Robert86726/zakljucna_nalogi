@@ -53,16 +53,17 @@
 
     <section id="izbira-predmeta" style="display:none;">
         <h3>Izberi predmet za <span id="izbran-datum"></span></h3>
-        <form action="/dodaj_zapisek" method="POST">
+        <form action="/dodaj_zapisek" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="datum" id="input-datum">
             <select name="predmet" required>
                 {% for predmet in predmeti %}
                     <option value="{{ predmet }}">{{ predmet }}</option>
                 {% endfor %}
             </select>
-            <textarea name="zapisek" placeholder="Vnesi zapisek..." required></textarea>
+            <input type="file" name="zapisek_file" required>
             <button type="submit">Shrani zapisek</button>
         </form>
+        <div id="povezava-zapiska" style="margin-top:10px;"></div>
     </section>
 </main>
 
@@ -108,6 +109,8 @@
                 document.getElementById("input-datum").value = datumString;
                 document.getElementById("izbira-predmeta").style.display = "block";
                 document.getElementById("izbira-predmeta").scrollIntoView({ behavior: "smooth" });
+
+                preveriZapisek(datumString);
             });
 
             koledar.appendChild(celica);
@@ -128,10 +131,24 @@
         prikaziKoledar(prikazaniMesec, prikazanoLeto);
     }
 
+    function preveriZapisek(datum) {
+        fetch(`/preveri_zapisek?datum=${datum}`)
+            .then(response => response.json())
+            .then(data => {
+                const div = document.getElementById("povezava-zapiska");
+                if (data.obstaja) {
+                    div.innerHTML = `<a href="/prenesi_zapisek?datum=${datum}" target="_blank">📄 Poglej zapiske</a>`;
+                } else {
+                    div.innerHTML = "";
+                }
+            });
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         prikaziKoledar(prikazaniMesec, prikazanoLeto);
     });
 </script>
+
 <style>
     .selected-day {
         background-color: #add8e6;

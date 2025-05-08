@@ -1,8 +1,14 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from tinydb import TinyDB, Query
+import os
+from flask import send_from_directory
 
 app = Flask(__name__)
 app.secret_key = "1234"
+
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = TinyDB('zapiski.json')
 users = db.table('users')
@@ -77,6 +83,7 @@ def dodaj_predmet():
     predmet = request.form['predmet']
     subjects.insert({'username': session['username'], 'subject': predmet})
     return redirect(url_for('dashboard'))
+
 @app.route('/dodaj_zapisek', methods=['POST'])
 def dodaj_zapisek():
     if 'username' not in session:
@@ -84,16 +91,28 @@ def dodaj_zapisek():
 
     datum = request.form['datum']
     predmet = request.form['predmet']
-    zapis = request.form['zapisek']
+    file = request.files['zapisek_file']
 
-    notes.insert({
-        'username': session['username'],
-        'datum': datum,
-        'predmet': predmet,
-        'zapis': zapis
-    })
+    if file:
+        filename = f"{session['username']}_{datum}.pdf"  # ali file.filename za original ime
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(path)
 
     return redirect(url_for('dashboard'))
+
+@app.route('/preveri_zapisek')
+def preveri_zapisek():
+    datum = request.args.get('datum')
+    filename = f"{session['username']}_{datum}.pdf"
+    path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    return jsonify({'obstaja': os.path.exists(path)})
+
+@app.route('/prenesi_zapisek')
+def prenesi_zapisek():
+    datum = request.args.get('datum')
+    filename = f"{session['username']}_{datum}.pdf"
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
 
 @app.route('/zapiski/<datum>')
 def pridobi_zapiske(datum):

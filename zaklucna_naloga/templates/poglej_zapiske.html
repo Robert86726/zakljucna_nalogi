@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyPal - Zapiski</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        a.download-link {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        a.download-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <img src="{{ url_for('static', filename='StudyPal_logo.png') }}" alt="StudyPal Logo" class="logo">
+    <nav>
+        <a href="{{ url_for('dashboard') }}">Nazaj na nadzorno ploščo</a>
+        <a href="{{ url_for('logout') }}">Odjava</a>
+    </nav>
+</header>
+
+<main>
+    <h1>Tvoji zapiski</h1>
+
+    {% if zapiski %}
+    <table>
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Predmet</th>
+                <th>Datoteka</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for zapis in zapiski %}
+            <tr>
+                <td>{{ zapis.datum }}</td>
+                <td>{{ zapis.predmet }}</td>
+                <td>
+                    <a class="download-link" href="{{ url_for('prenesi_zapisek', datum=zapis.datum) }}" target="_blank">
+                        Prenesi zapisek
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Zaenkrat še nimaš shranjenih zapiskov.</p>
+    {% endif %}
+</main>
+
+</body>
+</html>
