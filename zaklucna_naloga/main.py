@@ -107,11 +107,11 @@ def preveri_zapisek():
     path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     return jsonify({'obstaja': os.path.exists(path)})
 
-@app.route('/prenesi_zapisek')
+@app.route("/prenesi_zapisek")
 def prenesi_zapisek():
-    datum = request.args.get('datum')
-    filename = f"{session['username']}_{datum}.pdf"
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+    datum = request.args.get("datum")
+    filename = f"{session["username"]}_{datum}.pdf"
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
 
 
 @app.route('/zapiski/<datum>')
@@ -121,6 +121,19 @@ def pridobi_zapiske(datum):
 
     zapiski = notes.search((User.username == session['username']) & (User.datum == datum))
     return jsonify(zapiski)
+
+
+@app.route("/poglej_zapiske")
+def poglej_zapiske():
+    datum = request.args.get("datum")
+    predmet = request.args.get("predmet")
+    if not datum or not predmet:
+        return "Manjka datum ali predmet.", 400
+
+    zapiski = db.search((Query().datum == datum) & (Query().predmet == predmet))
+    return render_template("poglej_zapiske.html", datum=datum, predmet=predmet, zapiski=zapiski)
+
+
 
 
 if __name__ == "__main__":

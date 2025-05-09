@@ -4,27 +4,32 @@
     <meta charset="UTF-8">
     <title>StudyPal - Nadzorna plošča</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.css' rel='stylesheet' />
     <style>
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-bottom: 20px;
-        }
-        .day {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .day:hover {
-            background-color: #eef;
-        }
+        #calendar {
+        max-width: 700px;  /* prilagodi širino po potrebi */
+        margin: 0 auto;
+        font-size: 0.85rem; /* pomanjšaj pisavo za kompaktnejši izgled */
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.2rem; /* manjši naslov meseca */
+    }
+
+    .fc-daygrid-day-number {
+        font-size: 0.75rem; /* manjše številke dni */
+        padding: 2px;
+    }
+
+    .fc .fc-button {
+        padding: 0.3em 0.6em;
+        font-size: 0.8rem;
+    }
     </style>
 </head>
 <body>
 <header>
-    <img src="{{ url_for('static', filename='StudyPal_logo.png') }}" alt="StudyPal Logo" class="logo">
+    <img src="{{ url_for('static', filename='logi.png') }}" height="50px" alt="StudyPal Logo" class="logo">
     <nav>
         <a href="{{ url_for('logout') }}">Odjava</a>
     </nav>
@@ -43,19 +48,14 @@
 
     <section>
         <h2>Koledar</h2>
-        <div id="mesec" style="margin-bottom: 10px;">
-            <button onclick="premakniMesec(-1)">Prejšnji</button>
-            <span id="mesec-leto"></span>
-            <button onclick="premakniMesec(1)">Naslednji</button>
-        </div>
-        <div class="calendar" id="koledar"></div>
+        <div id='calendar'></div>
     </section>
 
     <section id="izbira-predmeta" style="display:none;">
-        <h3>Izberi predmet za <span id="izbran-datum"></span></h3>
+        <h3>Izberi predmet za <span id="izbran-datum"></span> — <span id="izbran-predmet"></span></h3>
         <form action="/dodaj_zapisek" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="datum" id="input-datum">
-            <select name="predmet" required>
+            <select name="predmet" id="select-predmet" required>
                 {% for predmet in predmeti %}
                     <option value="{{ predmet }}">{{ predmet }}</option>
                 {% endfor %}
@@ -67,94 +67,48 @@
     </section>
 </main>
 
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
 <script>
-    const meseci = ["Januar", "Februar", "Marec", "April", "Maj", "Junij", "Julij", "Avgust", "September", "Oktober", "November", "December"];
-    let danes = new Date();
-    let prikazaniMesec = danes.getMonth();
-    let prikazanoLeto = danes.getFullYear();
-    let trenutnoIzbranaCelica = null;
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      selectable: true,
+      dateClick: function(info) {
+        const datum = info.dateStr;
 
-    function prikaziKoledar(mesec, leto) {
-        const koledar = document.getElementById("koledar");
-        const naslov = document.getElementById("mesec-leto");
-        naslov.innerText = `${meseci[mesec]} ${leto}`;
-        koledar.innerHTML = "";
+        document.getElementById("izbran-datum").innerText = datum;
+        document.getElementById("input-datum").value = datum;
+        document.getElementById("izbira-predmeta").style.display = "block";
+        document.getElementById("izbira-predmeta").scrollIntoView({ behavior: "smooth" });
 
-        let prviDan = new Date(leto, mesec, 1).getDay();
-        if (prviDan === 0) prviDan = 7;
-
-        const dniVMesecu = new Date(leto, mesec + 1, 0).getDate();
-
-        for (let i = 1; i < prviDan; i++) {
-            const prazno = document.createElement("div");
-            koledar.appendChild(prazno);
-        }
-
-        for (let dan = 1; dan <= dniVMesecu; dan++) {
-            const celica = document.createElement("div");
-            celica.className = "day";
-            celica.innerText = dan;
-
-            const datumString = `${leto}-${String(mesec + 1).padStart(2, '0')}-${String(dan).padStart(2, '0')}`;
-            celica.dataset.datum = datumString;
-
-            celica.addEventListener("click", function () {
-                if (trenutnoIzbranaCelica) {
-                    trenutnoIzbranaCelica.classList.remove("selected-day");
-                }
-                celica.classList.add("selected-day");
-                trenutnoIzbranaCelica = celica;
-
-                document.getElementById("izbran-datum").innerText = datumString;
-                document.getElementById("input-datum").value = datumString;
-                document.getElementById("izbira-predmeta").style.display = "block";
-                document.getElementById("izbira-predmeta").scrollIntoView({ behavior: "smooth" });
-
-                preveriZapisek(datumString);
-            });
-
-            koledar.appendChild(celica);
-        }
-    }
-
-    function premakniMesec(premik) {
-        prikazaniMesec += premik;
-        if (prikazaniMesec > 11) {
-            prikazaniMesec = 0;
-            prikazanoLeto++;
-        } else if (prikazaniMesec < 0) {
-            prikazaniMesec = 11;
-            prikazanoLeto--;
-        }
-        trenutnoIzbranaCelica = null;
-        document.getElementById("izbira-predmeta").style.display = "none";
-        prikaziKoledar(prikazaniMesec, prikazanoLeto);
-    }
-
-    function preveriZapisek(datum) {
-        fetch(`/preveri_zapisek?datum=${datum}`)
-            .then(response => response.json())
-            .then(data => {
-                const div = document.getElementById("povezava-zapiska");
-                if (data.obstaja) {
-                    div.innerHTML = `<a href="/prenesi_zapisek?datum=${datum}" target="_blank">📄 Poglej zapiske</a>`;
-                } else {
-                    div.innerHTML = "";
-                }
-            });
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        prikaziKoledar(prikazaniMesec, prikazanoLeto);
+        preveriZapisek(datum);
+      }
     });
+    calendar.render();
+  });
+
+  function preveriZapisek(datum) {
+    fetch(`/preveri_zapisek?datum=${datum}`)
+      .then(response => response.json())
+      .then(data => {
+        const div = document.getElementById("povezava-zapiska");
+        if (data.obstaja) {
+          div.innerHTML = `<a href="/poglej_zapiske?datum=${datum}" target="_blank">📄 Poglej zapiske</a>`;
+        } else {
+          div.innerHTML = "";
+        }
+      });
+  }
+  document.getElementById("select-predmet").addEventListener("change", function () {
+    const predmet = this.value;
+    document.getElementById("izbran-predmet").innerText = predmet;
+
+    const datum = document.getElementById("input-datum").value;
+    preveriZapisek(datum, predmet);  
+});
 </script>
 
-<style>
-    .selected-day {
-        background-color: #add8e6;
-        border: 2px solid #007BFF;
-    }
-</style>
 
 </body>
 </html>
