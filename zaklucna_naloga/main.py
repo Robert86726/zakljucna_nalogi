@@ -123,15 +123,18 @@ def pridobi_zapiske(datum):
     return jsonify(zapiski)
 
 
-@app.route("/poglej_zapiske")
+@app.route('/poglej_zapiske')
 def poglej_zapiske():
-    datum = request.args.get("datum")
-    predmet = request.args.get("predmet")
-    if not datum or not predmet:
-        return "Manjka datum ali predmet.", 400
+    datum = request.args.get('datum')
+    predmet = request.args.get('predmet')
 
-    zapiski = db.search((Query().datum == datum) & (Query().predmet == predmet))
-    return render_template("poglej_zapiske.html", datum=datum, predmet=predmet, zapiski=zapiski)
+    if not datum or not predmet:
+        return "Manjka datum ali predmet."
+
+    pot = f'zapiski/{datum}_{predmet}.pdf'  
+
+    if not os.path.exists(pot):
+        return "Zapisek ne obstaja."
 
 
 

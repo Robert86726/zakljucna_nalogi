@@ -7,17 +7,17 @@
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.css' rel='stylesheet' />
     <style>
         #calendar {
-        max-width: 700px;  /* prilagodi širino po potrebi */
+        max-width: 700px;  
         margin: 0 auto;
-        font-size: 0.85rem; /* pomanjšaj pisavo za kompaktnejši izgled */
+        font-size: 0.85rem; 
     }
 
     .fc .fc-toolbar-title {
-        font-size: 1.2rem; /* manjši naslov meseca */
+        font-size: 1.2rem; 
     }
 
     .fc-daygrid-day-number {
-        font-size: 0.75rem; /* manjše številke dni */
+        font-size: 0.75rem; 
         padding: 2px;
     }
 
@@ -94,7 +94,7 @@
       .then(data => {
         const div = document.getElementById("povezava-zapiska");
         if (data.obstaja) {
-          div.innerHTML = `<a href="/poglej_zapiske?datum=${datum}" target="_blank">📄 Poglej zapiske</a>`;
+          div.innerHTML = `<a href="/poglej_zapiske?datum={{ datum }}&predmet={{ predmet }}" target="_blank">Poglej zapiske</a>`;
         } else {
           div.innerHTML = "";
         }

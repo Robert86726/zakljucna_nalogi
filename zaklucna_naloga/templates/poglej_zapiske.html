@@ -2,23 +2,32 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Zapiski za {{ datum }}</title>
+  <title>Zapiski za {{ datum if datum else 'neznan datum' }}</title>
 </head>
 <body>
-  <h1>Zapiski za predmet "{{ predmet }}" na datum {{ datum }}</h1>
 
-  {% if zapiski %}
-    <ul>
-      {% for zapis in zapiski %}
-        <li>
-          <a href="{{ url_for('static', filename='uploads/' + zapis.ime_datoteke) }}" target="_blank">Prenesi zapisek</a>
-        </li>
-      {% endfor %}
-    </ul>
+  {% if not datum or not predmet %}
+    <h1>Napaka</h1>
+    <p>Manjka datum ali predmet. Prosimo, vrnite se na nadzorno ploščo in poskusite znova.</p>
+    <a href="{{ url_for('dashboard') }}">Nazaj</a>
   {% else %}
-    <p>Ni zapiskov za ta predmet in datum.</p>
+    <h1>Zapiski za predmet "{{ predmet }}" na datum {{ datum }}</h1>
+
+    {% if zapiski %}
+      <ul>
+        {% for zapis in zapiski %}
+          <li>
+            <a href="{{ url_for('static', filename='uploads/' + zapis.ime_datoteke) }}" target="_blank">Prenesi zapisek</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Ni zapiskov za ta predmet in datum.</p>
+    {% endif %}
+
+    <a href="{{ url_for('dashboard') }}">Nazaj</a>
   {% endif %}
 
-  <a href="{{ url_for('dashboard') }}">Nazaj</a>
 </body>
 </html>
+
