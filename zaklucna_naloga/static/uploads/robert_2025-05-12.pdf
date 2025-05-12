@@ -1,0 +1,33 @@
+Uvod v CSS:
+S katerimi programi izdelamo slogovne predloge CSS?
+	notepad, visual studio code, notepad++
+
+Minimalni nivo:
+Kaj v CSS določa psevdorazred a:active?
+	a:active določa videz povezave v trenutku, ko je kliknjena
+
+S katero CSS oblikovno lastnostjo določimo razmik med celicami tabele, kadar ima vsaka celica svoje robove?
+	border-spacing;
+
+Srednji nivo:
+Katero CSS slogovno pravilo uporabi brskalnik, če je to zapisano dvakrat z isto prioriteto?
+	če imata dve pravili enako prioriteto, bo uporabljeno tisto, ki je zapisano zadnje v CSS dokumentu
+
+Višji nivo:
+Kako v CSS besedilo odstavka razdelimo v stolpce?
+	uporabimo lastnost column-count
+
+Praktični primer:
+Zapiši primer dedovanja po strukturi CSS!
+	<style>
+  	body {
+    		font-family: Arial;
+    		color: black;
+  	}
+  	p {
+    		font-size: 16px;
+ 	}
+	</style>
+	<body>
+  		<p>to je črne barve in pisave arial</p>
+	</body>

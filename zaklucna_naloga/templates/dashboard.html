@@ -7,24 +7,24 @@
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.css' rel='stylesheet' />
     <style>
         #calendar {
-        max-width: 700px;  
-        margin: 0 auto;
-        font-size: 0.85rem; 
-    }
+            max-width: 700px;  
+            margin: 0 auto;
+            font-size: 0.85rem; 
+        }
 
-    .fc .fc-toolbar-title {
-        font-size: 1.2rem; 
-    }
+        .fc .fc-toolbar-title {
+            font-size: 1.2rem; 
+        }
 
-    .fc-daygrid-day-number {
-        font-size: 0.75rem; 
-        padding: 2px;
-    }
+        .fc-daygrid-day-number {
+            font-size: 0.75rem; 
+            padding: 2px;
+        }
 
-    .fc .fc-button {
-        padding: 0.3em 0.6em;
-        font-size: 0.8rem;
-    }
+        .fc .fc-button {
+            padding: 0.3em 0.6em;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -82,33 +82,37 @@
         document.getElementById("izbira-predmeta").style.display = "block";
         document.getElementById("izbira-predmeta").scrollIntoView({ behavior: "smooth" });
 
-        preveriZapisek(datum);
+        const predmet = document.getElementById("select-predmet").value;
+        preveriZapisek(datum, predmet);
       }
     });
     calendar.render();
   });
 
   function preveriZapisek(datum) {
-    fetch(`/preveri_zapisek?datum=${datum}`)
-      .then(response => response.json())
-      .then(data => {
-        const div = document.getElementById("povezava-zapiska");
-        if (data.obstaja) {
-          div.innerHTML = `<a href="/poglej_zapiske?datum={{ datum }}&predmet={{ predmet }}" target="_blank">Poglej zapiske</a>`;
-        } else {
-          div.innerHTML = "";
-        }
-      });
+  fetch(`/preveri_zapisek?datum=${encodeURIComponent(datum)}`)
+    .then(response => response.json())
+    .then(data => {
+      const div = document.getElementById("povezava-zapiska");
+      const predmet = document.getElementById("select-predmet").value;
+      document.getElementById("izbran-predmet").innerText = predmet;
+
+      if (data.obstaja) {
+        div.innerHTML = `<a href="/poglej_zapiske?datum=${encodeURIComponent(datum)}&predmet=${encodeURIComponent(predmet)}" target="_blank">Poglej zapiske</a>`;
+      } else {
+        div.innerHTML = "";
+      }
+    });
   }
+
   document.getElementById("select-predmet").addEventListener("change", function () {
     const predmet = this.value;
+    const datum = document.getElementById("input-datum").value;
     document.getElementById("izbran-predmet").innerText = predmet;
 
-    const datum = document.getElementById("input-datum").value;
-    preveriZapisek(datum, predmet);  
-});
+    preveriZapisek(datum, predmet);
+  });
 </script>
-
 
 </body>
 </html>

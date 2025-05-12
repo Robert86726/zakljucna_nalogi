@@ -13,14 +13,10 @@
   {% else %}
     <h1>Zapiski za predmet "{{ predmet }}" na datum {{ datum }}</h1>
 
-    {% if zapiski %}
-      <ul>
-        {% for zapis in zapiski %}
-          <li>
-            <a href="{{ url_for('static', filename='uploads/' + zapis.ime_datoteke) }}" target="_blank">Prenesi zapisek</a>
-          </li>
-        {% endfor %}
-      </ul>
+    {% if datoteka_obstaja %}
+      <p>
+        <a href="{{ url_for('prenesi_zapisek', datum=datum) }}" target="_blank">Prenesi zapisek (PDF)</a>
+      </p>
     {% else %}
       <p>Ni zapiskov za ta predmet in datum.</p>
     {% endif %}

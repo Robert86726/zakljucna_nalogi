@@ -6,7 +6,7 @@ from flask import send_from_directory
 app = Flask(__name__)
 app.secret_key = "1234"
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -94,7 +94,7 @@ def dodaj_zapisek():
     file = request.files['zapisek_file']
 
     if file:
-        filename = f"{session['username']}_{datum}.pdf"  # ali file.filename za original ime
+        filename = f"{session['username']}_{datum}.pdf"  
         path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(path)
 
@@ -125,16 +125,21 @@ def pridobi_zapiske(datum):
 
 @app.route('/poglej_zapiske')
 def poglej_zapiske():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
     datum = request.args.get('datum')
     predmet = request.args.get('predmet')
 
     if not datum or not predmet:
-        return "Manjka datum ali predmet."
+        return render_template("poglej_zapiske.html", datum=datum, predmet=predmet, datoteka_obstaja=False)
 
-    pot = f'zapiski/{datum}_{predmet}.pdf'  
+    filename = f"{session['username']}_{datum}.pdf"
+    path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    obstaja = os.path.exists(path)
 
-    if not os.path.exists(pot):
-        return "Zapisek ne obstaja."
+    return render_template("poglej_zapiske.html", datum=datum, predmet=predmet, datoteka_obstaja=obstaja)
+
 
 
 
