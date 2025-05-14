@@ -69,25 +69,33 @@
 
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      selectable: true,
-      dateClick: function(info) {
-        const datum = info.dateStr;
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
 
-        document.getElementById("izbran-datum").innerText = datum;
-        document.getElementById("input-datum").value = datum;
-        document.getElementById("izbira-predmeta").style.display = "block";
-        document.getElementById("izbira-predmeta").scrollIntoView({ behavior: "smooth" });
+  // Najprej pridobi dogodke
+  fetch('/koledar_dogodki')
+    .then(response => response.json())
+    .then(events => {
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        events: events,  // Dodani dogodki iz strežnika
+        dateClick: function(info) {
+          const datum = info.dateStr;
 
-        const predmet = document.getElementById("select-predmet").value;
-        preveriZapisek(datum, predmet);
-      }
+          document.getElementById("izbran-datum").innerText = datum;
+          document.getElementById("input-datum").value = datum;
+          document.getElementById("izbira-predmeta").style.display = "block";
+          document.getElementById("izbira-predmeta").scrollIntoView({ behavior: "smooth" });
+
+          const predmet = document.getElementById("select-predmet").value;
+          preveriZapisek(datum, predmet);
+        }
+      });
+
+      calendar.render();
     });
-    calendar.render();
-  });
+});
 
   function preveriZapisek(datum) {
   fetch(`/preveri_zapisek?datum=${encodeURIComponent(datum)}`)

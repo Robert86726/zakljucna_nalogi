@@ -98,7 +98,14 @@ def dodaj_zapisek():
         path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(path)
 
+        notes.insert({
+            'username': session['username'],
+            'datum': datum,
+            'predmet': predmet
+        })
+
     return redirect(url_for('dashboard'))
+
 
 @app.route('/preveri_zapisek')
 def preveri_zapisek():
@@ -140,6 +147,20 @@ def poglej_zapiske():
 
     return render_template("poglej_zapiske.html", datum=datum, predmet=predmet, datoteka_obstaja=obstaja)
 
+@app.route("/koledar_dogodki")
+def koledar_dogodki():
+    if 'username' not in session:
+        return jsonify([])
+
+    user_notes = notes.search(User.username == session['username'])
+    events = [
+        {
+            "title": note['predmet'],
+            "start": note['datum']
+        }
+        for note in user_notes
+    ]
+    return jsonify(events)
 
 
 
