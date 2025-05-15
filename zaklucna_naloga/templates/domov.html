@@ -3,34 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>StudyPal</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        .button-container {
-            margin-top: 40px;
-        }
-        a.button {
-            display: inline-block;
-            padding: 12px 24px;
-            margin: 10px;
-            font-size: 18px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        a.button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
+<header>
+        <div class="logo-container">
+            <img src="../static/logi.png" height="50px">
+        </div>
+</header>
 <body>
-    <img src="{{ url_for('static', filename='logi.png') }}" alt="StudyPal Logo" style="max-width: 300px;">
-
+<body>
     <div class="button-container">
         <a href="/register" class="button">Registracija</a>
         <a href="/login" class="button">Prijava</a>

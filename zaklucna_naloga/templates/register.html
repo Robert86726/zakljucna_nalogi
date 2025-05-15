@@ -3,37 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MealMatch - Registracija</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>StudyPal - Registracija</title>
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
+<header>
+        <div class="logo-container">
+            <img src="../static/logi.png" height="50px">
+        </div>
+</header>
 <body>
     <header>
         <nav>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Domov</a></li>
-                <li><a href="{{ url_for('login') }}">Prijava</a></li>
-                <li><a href="{{ url_for('register') }}">Registracija</a></li>
-            </ul>
+            <a href="{{ url_for('home') }}">Domov</a>
+            <a href="{{ url_for('login') }}">Prijava</a>
+            <a href="{{ url_for('register') }}">Registracija</a>
         </nav>
     </header>
 
     <main>
-        <h1>Registracija</h1>
-        <form method="POST">
-            <label for="username">Uporabniško ime:</label>
-            <input type="text" id="username" name="username" required>
-            
-            <label for="password">Geslo:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <label for="first_name">Ime:</label>
-            <input type="text" id="first_name" name="first_name" required>
-            
-            <label for="last_name">Priimek:</label>
-            <input type="text" id="last_name" name="last_name" required>
-            
-            <button type="submit">Registriraj se</button>
-        </form>
+        <div class="content-container">
+            <h1>Registracija</h1>
+            <form method="POST">
+                <label for="username">Uporabniško ime:</label>
+                <input type="text" id="username" name="username" required>
+
+                <label for="password">Geslo:</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="first_name">Ime:</label>
+                <input type="text" id="first_name" name="first_name" required>
+
+                <label for="last_name">Priimek:</label>
+                <input type="text" id="last_name" name="last_name" required>
+
+                <button type="submit">Registriraj se</button>
+            </form>
+        </div>
     </main>
 
     <footer>

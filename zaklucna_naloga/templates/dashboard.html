@@ -3,29 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>StudyPal - Nadzorna plošča</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="../static/styles.css">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.css' rel='stylesheet' />
-    <style>
-        #calendar {
-            max-width: 700px;  
-            margin: 0 auto;
-            font-size: 0.85rem; 
-        }
-
-        .fc .fc-toolbar-title {
-            font-size: 1.2rem; 
-        }
-
-        .fc-daygrid-day-number {
-            font-size: 0.75rem; 
-            padding: 2px;
-        }
-
-        .fc .fc-button {
-            padding: 0.3em 0.6em;
-            font-size: 0.8rem;
-        }
-    </style>
 </head>
 <body>
 <header>
@@ -63,7 +42,7 @@
             <input type="file" name="zapisek_file" required>
             <button type="submit">Shrani zapisek</button>
         </form>
-        <div id="povezava-zapiska" style="margin-top:10px;"></div>
+        <div id="povezava-zapiska" class="zapiskova-povezava" style="margin-top:10px;"></div> <!-- Spremenjen ime div -->
     </section>
 </main>
 
@@ -97,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-  function preveriZapisek(datum) {
+function preveriZapisek(datum) {
   fetch(`/preveri_zapisek?datum=${encodeURIComponent(datum)}`)
     .then(response => response.json())
     .then(data => {
@@ -111,15 +90,15 @@ document.addEventListener('DOMContentLoaded', function() {
         div.innerHTML = "";
       }
     });
-  }
+}
 
-  document.getElementById("select-predmet").addEventListener("change", function () {
-    const predmet = this.value;
-    const datum = document.getElementById("input-datum").value;
-    document.getElementById("izbran-predmet").innerText = predmet;
+document.getElementById("select-predmet").addEventListener("change", function () {
+  const predmet = this.value;
+  const datum = document.getElementById("input-datum").value;
+  document.getElementById("izbran-predmet").innerText = predmet;
 
-    preveriZapisek(datum, predmet);
-  });
+  preveriZapisek(datum, predmet);
+});
 </script>
 
 </body>

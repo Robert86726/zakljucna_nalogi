@@ -4,28 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prijava</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
+<header>
+        <div class="logo-container">
+            <img src="../static/logi.png" height="50px">
+        </div>
+</header>
+<body>
 <body>
     <div class="form-container">
-        <h2>Prijava</h2>
-        <form action="/login" method="POST">
-            <label for="username">Uporabniško ime:</label>
-            <input type="text" name="username" id="username" required>
-
-            <label for="password">Geslo:</label>
-            <input type="password" name="password" id="password" required>
-
-            <button type="submit">Prijavi se</button>
-
-            {% if error_message %}
-                <div class="error-message">
-                    {{ error_message }}
+        <div class="content-container">
+            <h2>Prijava</h2>
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="username">Uporabniško ime:</label>
+                    <input type="text" name="username" id="username" required>
                 </div>
-            {% endif %}
-        </form>
 
-        <p>Še nimaš računa? <a href="{{ url_for('register') }}">Registriraj se tukaj</a></p>
+                <div class="form-group">
+                    <label for="password">Geslo:</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+
+                <button type="submit">Prijavi se</button>
+
+                {% if error_message %}
+                    <div class="error-message">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+            </form>
+
+            <p>Še nimaš računa? <a href="{{ url_for('register') }}">Registriraj se tukaj</a></p>
+        </div>
     </div>
 </body>
 </html>
