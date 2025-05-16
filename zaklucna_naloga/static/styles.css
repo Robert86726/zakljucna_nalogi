@@ -77,14 +77,22 @@ a {
     text-align: center;
     margin-top: 20px;
 }
-
+header a {
+    color: #ffffff; /* Svetlo modre povezave */
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+}
 a:hover {
     text-decoration: underline;
 }
 
 /* Napaka */
 h1 {
-    color: #D32F2F; /* Rdeča barva za napake */
+    color: #4c8baf; /* Rdeča barva za napake */
+    text-align: center;
 }
 
 .content-container.error {

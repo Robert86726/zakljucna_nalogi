@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Zapiski za {{ datum if datum else 'neznan datum' }}</title>
+  <title>Zapiski</title>
   <link rel="stylesheet" href="../static/styles.css">
 </head>
 <header>
@@ -12,30 +12,17 @@
 </header>
 <body>
 <body>
-
-  {% if not datum or not predmet %}
-    <div class="content-container error">
-      <h1>Napaka</h1>
-      <p>Manjka datum ali predmet. Prosimo, vrnite se na nadzorno ploščo in poskusite znova.</p>
-      <a href="{{ url_for('dashboard') }}">Nazaj</a>
-    </div>
-  {% else %}
     <div class="content-container">
-      <h1>Zapiski za predmet "{{ predmet }}" na datum {{ datum }}</h1>
-
+      <h1>Zapiski</h1>
       {% if datoteka_obstaja %}
         <div class="download-link">
           <p>
             <a href="{{ url_for('prenesi_zapisek', datum=datum) }}" target="_blank">Prenesi zapisek (PDF)</a>
           </p>
-        </div>
-      {% else %}
-        <p>Ni zapiskov za ta predmet in datum.</p>
-      {% endif %}
-
+        </div>     
       <a href="{{ url_for('dashboard') }}">Nazaj</a>
     </div>
-  {% endif %}
+    {% endif %}
 
 </body>
 </html>

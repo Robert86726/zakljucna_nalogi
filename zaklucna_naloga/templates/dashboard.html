@@ -42,7 +42,7 @@
             <input type="file" name="zapisek_file" required>
             <button type="submit">Shrani zapisek</button>
         </form>
-        <div id="povezava-zapiska" class="zapiskova-povezava" style="margin-top:10px;"></div> <!-- Spremenjen ime div -->
+        <div id="povezava-zapiska" class="zapiskova-povezava" style="margin-top:10px;"></div>
     </section>
 </main>
 
@@ -51,14 +51,13 @@
 document.addEventListener('DOMContentLoaded', function() {
   var calendarEl = document.getElementById('calendar');
 
-  // Najprej pridobi dogodke
   fetch('/koledar_dogodki')
     .then(response => response.json())
     .then(events => {
       var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         selectable: true,
-        events: events,  // Dodani dogodki iz strežnika
+        events: events, 
         dateClick: function(info) {
           const datum = info.dateStr;
 

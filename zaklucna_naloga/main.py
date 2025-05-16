@@ -106,7 +106,6 @@ def dodaj_zapisek():
 
     return redirect(url_for('dashboard'))
 
-
 @app.route('/preveri_zapisek')
 def preveri_zapisek():
     datum = request.args.get('datum')
@@ -119,16 +118,6 @@ def prenesi_zapisek():
     datum = request.args.get("datum")
     filename = f"{session["username"]}_{datum}.pdf"
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
-
-
-@app.route('/zapiski/<datum>')
-def pridobi_zapiske(datum):
-    if 'username' not in session:
-        return jsonify([])
-
-    zapiski = notes.search((User.username == session['username']) & (User.datum == datum))
-    return jsonify(zapiski)
-
 
 @app.route('/poglej_zapiske')
 def poglej_zapiske():
@@ -161,9 +150,6 @@ def koledar_dogodki():
         for note in user_notes
     ]
     return jsonify(events)
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
